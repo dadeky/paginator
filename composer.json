@@ -28,5 +28,6 @@
     "psr-4": {
       "Paginator\\Tests\\": "tests/Paginator/Tests"
     }
-  }
+  },
+  "minimum-stability": "dev",
 }
