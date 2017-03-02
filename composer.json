@@ -22,12 +22,12 @@
   },
   "autoload": {
     "psr-4": {
-      "JQPaginator\\": "src/JQPaginator"
+      "Paginator\\": "src/Paginator"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "JQPaginator\\Tests\\": "tests/JQPaginator/Tests"
+      "Paginator\\Tests\\": "tests/Paginator/Tests"
     }
   }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace JQPaginator;
+namespace Paginator;
 
 interface PaginatedQueryRequestInterface 
 {
