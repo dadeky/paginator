@@ -140,8 +140,10 @@ class Paginator {
 	 * @param string $prefix
 	 * @return QueryBuilder
 	 */
-	public function paginate(QueryBuilder $qb, $prefix)
+	public function paginate(PaginatableQueryInterface $query)
 	{
+		$prefix = $query->getPrefix();
+		$qb = $query->getQueryBuilder();
 		//search
 		if($this->searchEnabled)
 		{
