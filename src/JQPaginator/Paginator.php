@@ -1,5 +1,5 @@
 <?php
-namespace Paginator;
+namespace JQPaginator;
 
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
