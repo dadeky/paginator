@@ -1,5 +1,6 @@
 <?php
-namespace JQPaginator;
+
+namespace Paginator;
 
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
@@ -52,15 +53,18 @@ class Paginator {
 	 */
 	private $paginatedResult;
 	
-	
 	public function __construct(
-		PaginatedQueryRequestInterface $params
-	){
-		$this->page = $params->getPage();
-		$this->itemCount = $params->getItemCount();
-		$this->searchEnabled = $params->getSearchEnabled();
-		$this->searchParams = $params->getSearchParams();
-		$this->orderSpecs = $params->getOrderSpecs();
+			$page,
+			$itemCount,
+			$searchEnabled,
+			$searchParams,
+			$orderSpecs
+			){
+				$this->page = $page;
+				$this->itemCount = $itemCount;
+				$this->searchEnabled = $searchEnabled;
+				$this->searchParams = $searchParams;
+				$this->orderSpecs = $orderSpecs;
 	}
 	
 	private function processRule(
@@ -140,10 +144,8 @@ class Paginator {
 	 * @param string $prefix
 	 * @return QueryBuilder
 	 */
-	public function paginate(PaginatableQueryInterface $query)
+	public function paginate(QueryBuilder $qb, $prefix)
 	{
-		$prefix = $query->getPrefix();
-		$qb = $query->getQueryBuilder();
 		//search
 		if($this->searchEnabled)
 		{
