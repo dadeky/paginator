@@ -16,7 +16,7 @@
     "sort-packages": true
   },
   "require": {
-    "php": ">=5.6",
+    "php": ">=5.5",
     "ext-mbstring": "*"
   },
   "autoload": {
@@ -28,6 +28,5 @@
     "psr-4": {
       "Paginator\\Tests\\": "tests/Paginator/Tests"
     }
-  },
-  "minimum-stability": "stable"
+  }
 }
