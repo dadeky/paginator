@@ -54,17 +54,13 @@ class Paginator {
 	private $paginatedResult;
 	
 	public function __construct(
-			$page,
-			$itemCount,
-			$searchEnabled,
-			$searchParams,
-			$orderSpecs
-			){
-				$this->page = $page;
-				$this->itemCount = $itemCount;
-				$this->searchEnabled = $searchEnabled;
-				$this->searchParams = $searchParams;
-				$this->orderSpecs = $orderSpecs;
+			PaginatedQueryRequestInterface $request
+	){
+		$this->page = $request->getPage();
+		$this->itemCount = $request->getItemCount();
+		$this->searchEnabled = $request->getSearchEnabled();
+		$this->searchParams = $request->getSearchParams();
+		$this->orderSpecs = $request->getOrderSpecs();
 	}
 	
 	private function processRule(
