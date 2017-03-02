@@ -29,5 +29,5 @@
       "Paginator\\Tests\\": "tests/Paginator/Tests"
     }
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
 }
