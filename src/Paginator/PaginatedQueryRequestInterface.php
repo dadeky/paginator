@@ -33,4 +33,10 @@ interface PaginatedQueryRequestInterface
 	 */
 	public function getOrderSpecs();
 	
+	/**
+	 * If the result should be paginated
+	 * @return bool
+	 */
+	public function getResultShouldBePaginated();
+	
 }
