@@ -6,35 +6,9 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 
 class Paginator {
-	/**
-	 * Page number to be displayed eg. 5
-	 * @var integer
-	 * */
-	private $page;
 	
-	/**
-	 * The number of items per page eg. 25
-	 * @var integer
-	 */
-	private $itemCount;
-	
-	/**
-	 * Is the search enabled
-	 * @var boolean
-	 */
-	private $searchEnabled;
-	
-	/**
-	 * Parameters by which the data are filtered eg. array('groupOp' => 'AND', 'rules' => array(array('field'=>'plant', 'op'=>'eq', 'data'=>500)))
-	 * @var array
-	 */
-	private $searchParams;
-	
-	/**
-	 * Order specifications eg. array('plantNr' => 'ASC', 'workCenterCode' => 'DESC')
-	 * @var array
-	 */
-	private $orderSpecs;
+	/** @var AbstractPaginatedQueryRequest */
+	private $request;
 	
 	/**
 	 * The total number of items in the paginator
@@ -54,13 +28,9 @@ class Paginator {
 	private $paginatedResult;
 	
 	public function __construct(
-			PaginatedQueryRequestInterface $request
+			AbstractPaginatedQueryRequest $request
 	){
-		$this->page = $request->getPage();
-		$this->itemCount = $request->getItemCount();
-		$this->searchEnabled = $request->getSearchEnabled();
-		$this->searchParams = $request->getSearchParams();
-		$this->orderSpecs = $request->getOrderSpecs();
+		$this->request = $request;
 	}
 	
 	private function processRule(
@@ -131,7 +101,7 @@ class Paginator {
 	
 	private function firstResult()
 	{
-		return ($this->page - 1) * $this->itemCount;
+		return ($this->getPageNumber() - 1) * $this->request->getItemCount();
 	}
 	
 	/**
@@ -145,31 +115,31 @@ class Paginator {
 		$prefix = $query->getPrefix();
 		$qb = $query->getQueryBuilder();
 		//search
-		if($this->searchEnabled)
+		if($this->request->getSearchEnabled())
 		{
-			if (count($this->searchParams->rules) > 0)
+			if (count($this->request->getSearchParams()->rules) > 0)
 			{
-				foreach ($this->searchParams->rules as $rule)
+				foreach ($this->request->getSearchParams()->rules as $rule)
 				{
-					$qb = $this->processRule($qb, $this->searchParams->groupOp, $rule->field, $rule->op, $rule->data, $prefix);
+					$qb = $this->processRule($qb, $this->request->getSearchParams()->groupOp, $rule->field, $rule->op, $rule->data, $prefix);
 				}
 			}
 		}
 	
 		//ordering
-		if (count($this->orderSpecs) > 0)
+		if (count($this->request->getOrderSpecs()) > 0)
 		{
-			foreach ($this->orderSpecs as $field => $direction)
+			foreach ($this->request->getOrderSpecs() as $field => $direction)
 			{
 				$qb->orderBy($prefix.".".$field,$direction);
 			}
 		}
 	
 		$this->totalItems = count($this->cloneQuery($qb->getQuery())->getScalarResult());
-		$this->totalPages = ceil($this->totalItems / $this->itemCount);
+		$this->totalPages = ceil($this->totalItems / $this->request->getItemCount());
 	
 		//pagination
-		$qb->setMaxResults($this->itemCount);
+		$qb->setMaxResults($this->request->getItemCount());
 		$qb->setFirstResult($this->firstResult());
 	
 		$this->paginatedResult = $qb->getQuery()->getResult();
@@ -206,7 +176,7 @@ class Paginator {
 	
 	public function getPageNumber()
 	{
-		return $this->page;
+		return $this->request->getPage();
 	}
 	
 	public function getTotalPages()
