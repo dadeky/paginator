@@ -46,12 +46,12 @@ class Paginator {
 						
 					// @todo
 					/*
-					 { oper: "bw", text: "begins with" },
-					 { oper: "bn", text: "not begins with " },
+					 { oper: "bw", text: "begins with" }, // done
+					 { oper: "bn", text: "not begins with " }, // done
 					 { oper: "in", text: "is in" },
 					 { oper: "ni", text: "is not in" },
-					 { oper: "ew", text: "ends with" },
-					 { oper: "en", text: "not ends with" },
+					 { oper: "ew", text: "ends with" }, // done
+					 { oper: "en", text: "not ends with" }, // done
 					 */
 						
 					case 'cn':
@@ -62,6 +62,26 @@ class Paginator {
 					case 'nc':
 						$qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$fieldName));
 						$qb->setParameter($fieldName, "%".$value."%");
+						break;
+	
+					case 'bw':
+						$qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$fieldName));
+						$qb->setParameter($fieldName, $value."%");
+						break;
+	
+					case 'bn':
+						$qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$fieldName));
+						$qb->setParameter($fieldName, $value."%");
+						break;
+	
+					case 'ew':
+						$qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$fieldName));
+						$qb->setParameter($fieldName, "%".$value);
+						break;
+	
+					case 'en':
+						$qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$fieldName));
+						$qb->setParameter($fieldName, "%".$value);
 						break;
 	
 					case 'nu':
