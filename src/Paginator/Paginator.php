@@ -46,56 +46,66 @@ class Paginator {
 						
 					// @todo
 					/*
-					 { oper: "bw", text: "poèinje sa" },
-					 { oper: "bn", text: "ne poèinje sa " },
-					 { oper: "in", text: "je u" },
-					 { oper: "ni", text: "nije u" },
-					 { oper: "ew", text: "završava sa" },
-					 { oper: "en", text: "ne završava sa" },
+					 { oper: "bw", text: "begins with" },
+					 { oper: "bn", text: "not begins with " },
+					 { oper: "in", text: "is in" },
+					 { oper: "ni", text: "is not in" },
+					 { oper: "ew", text: "ends with" },
+					 { oper: "en", text: "not ends with" },
 					 */
 						
 					case 'cn':
 						$qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$fieldName));
+						$qb->setParameter($fieldName, "%".$value."%");
 						break;
 	
 					case 'nc':
 						$qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$fieldName));
+						$qb->setParameter($fieldName, "%".$value."%");
 						break;
 	
 					case 'nu':
 						$qb->{$whereMethod}($qb->expr()->isNull($prefix.".".$fieldName));
+						$qb->setParameter($fieldName, $value);
 						break;
 	
 					case 'nn':
 						$qb->{$whereMethod}($qb->expr()->isNotNull($prefix.".".$fieldName));
+						$qb->setParameter($fieldName, $value);
 						break;
 	
 					case 'ge':
 						$qb->{$whereMethod}($prefix.".".$fieldName . ' >= :' . $fieldName);
+						$qb->setParameter($fieldName, $value);
 						break;
 	
 					case 'le':
 						$qb->{$whereMethod}($prefix.".".$fieldName . ' <= :' . $fieldName);
+						$qb->setParameter($fieldName, $value);
 						break;
 	
 					case 'eq':
 						$qb->{$whereMethod}($prefix.".".$fieldName . ' = :' . $fieldName);
+						$qb->setParameter($fieldName, $value);
 						break;
 	
 					case 'ne':
 						$qb->{$whereMethod}($prefix.".".$fieldName . ' != :' . $fieldName);
+						$qb->setParameter($fieldName, $value);
 						break;
 	
 					case 'lt':
 						$qb->{$whereMethod}($prefix.".".$fieldName . ' < :' . $fieldName);
+						$qb->setParameter($fieldName, $value);
 						break;
 	
 					case 'gt':
 						$qb->{$whereMethod}($prefix.".".$fieldName . ' > :' . $fieldName);
+						$qb->setParameter($fieldName, $value);
 						break;
 				}
 	
-				$qb->setParameter($fieldName, $value);
+				/*$qb->setParameter($fieldName, $value);*/
 				return $qb;
 	}
 	
