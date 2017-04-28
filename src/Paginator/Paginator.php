@@ -23,6 +23,12 @@ class Paginator {
 	private $totalPages;
 	
 	/**
+	 * Separator for IN, NOT IN
+	 * @var string
+	 */
+	private $separator=";";
+	
+	/**
 	 * @var array
 	 */
 	private $paginatedResult;
@@ -123,6 +129,16 @@ class Paginator {
 						$qb->{$whereMethod}($prefix.".".$fieldName . ' > :' . $fieldName);
 						$qb->setParameter($fieldName, $value);
 						break;
+	
+					case 'in':
+						$qb->{$whereMethod}($qb->expr()->in($prefix.".".$fieldName, ':'.$fieldName));
+						$qb->setParameter($fieldName, explode($this->getSeparator(),$value));
+						break;
+	
+					case 'ni':
+						$qb->{$whereMethod}($qb->expr()->notIn($prefix.".".$fieldName, ':'.$fieldName));
+						$qb->setParameter($fieldName, explode($this->getSeparator(),$value));
+						break;
 				}
 	
 				/*$qb->setParameter($fieldName, $value);*/
@@ -217,5 +233,10 @@ class Paginator {
 	public function getTotalItems()
 	{
 		return $this->totalItems;
+	}
+	
+	public function getSeparator()
+	{
+		return $this->separator;
 	}
 }
