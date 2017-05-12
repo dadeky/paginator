@@ -188,7 +188,7 @@ class Paginator {
 		$qb->setMaxResults($this->request->getItemCount());
 		$qb->setFirstResult($this->firstResult());
 	
-		$this->paginatedResult = $qb->getQuery()->getResult();
+		$this->paginatedResult = $qb->getQuery()->getResult($query->getHydrator());
 	
 		return $this;
 	}
