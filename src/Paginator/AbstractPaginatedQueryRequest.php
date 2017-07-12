@@ -23,7 +23,7 @@ abstract class AbstractPaginatedQueryRequest
 	
 	/**
 	 * Parameters by which the data are filtered eg. array('groupOp' => 'AND', 'rules' => array('field'=>'plant', 'op'=>'eq', 'data'=>500))
-	 * @var array
+	 * @var SearchGroup[]
 	 */
 	protected $searchParams;
 	
@@ -46,10 +46,43 @@ abstract class AbstractPaginatedQueryRequest
 	){
 		$this->page = $page;
 		$this->itemCount = $itemCount;
-		$this->searchEnabled = $searchEnabled;
-		$this->searchParams = $searchParams;
+		$this->searchEnabled = (bool) $searchEnabled;
 		$this->orderSpecs = $orderSpecs;
 		$this->resultShouldBePaginated = (bool) $resultShouldBePaginated;
+		
+		$this->setSearchParams($searchParams);
+	}
+	
+	/**
+	 * 
+	 * @param SearchGroup[] | \stdClass $searchParams
+	 */
+	public function setSearchParams($searchParams)
+	{
+	    $this->removeSearchParams();
+        if ($searchParams instanceof SearchGroup){
+            $this->searchParams = $searchGroup;
+        }else{
+            if (count($searchParams->rules) > 0)
+            {
+                $rules = [];
+                foreach ($searchParams->rules as $rule){
+                    $rules[] = new SearchRule($rule->field, $rule->op, $rule->data);
+                }
+                $this->searchParams = new SearchGroup($searchParams->groupOp, $rules);
+            }
+        }
+	}
+	
+	public function removeSearchParams()
+	{
+	    $searchParams = $this->getSearchParams();
+	    if (count($searchParams) > 0)
+	    {
+	        foreach ($searchParams as $key => $searchParam){
+	            unset($searchParams[$key]);
+	        }
+	    }
 	}
 	
 	/**
@@ -74,7 +107,7 @@ abstract class AbstractPaginatedQueryRequest
 	}
 	
 	/**
-	 * 
+	 * @return SearchGroup[]
 	 */
 	public function getSearchParams() {
 		return $this->searchParams;
