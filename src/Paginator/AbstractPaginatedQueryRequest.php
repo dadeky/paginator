@@ -59,7 +59,6 @@ abstract class AbstractPaginatedQueryRequest
 	 */
 	public function setSearchParams($searchParams)
 	{
-	    $this->removeSearchParams();
         if ($searchParams instanceof SearchGroup){
             $this->searchParams = $searchGroup;
         }else{
@@ -72,17 +71,6 @@ abstract class AbstractPaginatedQueryRequest
                 $this->searchParams = new SearchGroup($searchParams->groupOp, $rules);
             }
         }
-	}
-	
-	public function removeSearchParams()
-	{
-	    $searchParams = $this->getSearchParams();
-	    if (count($searchParams) > 0)
-	    {
-	        foreach ($searchParams as $key => $searchParam){
-	            unset($searchParams[$key]);
-	        }
-	    }
 	}
 	
 	/**
