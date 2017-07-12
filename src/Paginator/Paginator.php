@@ -163,13 +163,16 @@ class Paginator {
 		//search
 		if($this->request->getSearchEnabled())
 		{
-			if (count($this->request->getSearchParams()->getSearchRules()) > 0)
-			{
-				foreach ($this->request->getSearchParams()->getSearchRules() as $rule)
-				{
-					$qb = $this->processRule($qb, $this->request->getSearchParams()->getGroupOperand(), $rule->getField(), $rule->getOperand(), $rule->getData(), $prefix);
-				}
-			}
+		    if (null !== $this->request->getSearchParams())
+		    {
+		        if (count($this->request->getSearchParams()->getSearchRules()) > 0)
+		        {
+		            foreach ($this->request->getSearchParams()->getSearchRules() as $rule)
+		            {
+		                $qb = $this->processRule($qb, $this->request->getSearchParams()->getGroupOperand(), $rule->getField(), $rule->getOperand(), $rule->getData(), $prefix);
+		            }
+		        }
+		    }
 		}
 	
 		//ordering
