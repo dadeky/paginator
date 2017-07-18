@@ -46,14 +46,43 @@ abstract class AbstractPaginatedQueryRequest
 	){
 		$this->page = $page;
 		$this->itemCount = $itemCount;
-		$this->searchEnabled = (bool) $searchEnabled;
+		$this->setSearchEnabled($searchEnabled);
+		$this->setResultShouldBePaginated($resultShouldBePaginated);
 		$this->orderSpecs = $orderSpecs;
-		$this->resultShouldBePaginated = (bool) $resultShouldBePaginated;
-		
 		$this->setSearchParams($searchParams);
 	}
 	
 	/**
+     * @param $resultShouldBePaginated
+     */
+    public function setResultShouldBePaginated($resultShouldBePaginated)
+    {
+        if ($resultShouldBePaginated == "true"){
+            $resultShouldBePaginated = true;
+        }elseif ($resultShouldBePaginated == "false"){
+            $resultShouldBePaginated = false;
+        }else{
+            $resultShouldBePaginated = boolval($resultShouldBePaginated);
+        }
+        $this->resultShouldBePaginated = $resultShouldBePaginated;
+    }
+
+    /**
+     * @param $searchEnabled
+     */
+    public function setSearchEnabled($searchEnabled)
+    {
+        if ($searchEnabled == "true"){
+            $searchEnabled = true;
+        }elseif ($searchEnabled == "false"){
+            $searchEnabled = false;
+        }else{
+            $searchEnabled = boolval($searchEnabled);
+        }
+        $this->searchEnabled = $searchEnabled;
+    }
+
+    /**
 	 * 
 	 * @param SearchGroup[] | \stdClass $searchParams
 	 */
