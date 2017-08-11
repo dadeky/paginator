@@ -89,9 +89,9 @@ abstract class AbstractPaginatedQueryRequest
 	public function setSearchParams($searchParams)
 	{
         if ($searchParams instanceof SearchGroup){
-            $this->searchParams = $searchGroup;
+            $this->searchParams = $searchParams;
         }else{
-            if (count($searchParams->rules) > 0)
+            if (isset($searchParams->rules) && count($searchParams->rules) > 0)
             {
                 $rules = [];
                 foreach ($searchParams->rules as $rule){
