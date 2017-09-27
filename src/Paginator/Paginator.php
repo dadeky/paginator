@@ -39,6 +39,14 @@ class Paginator {
 		$this->request = $request;
 	}
 	
+	private function resolveParameter($fieldName)
+	{
+	    $fieldNameArray = explode(".", $fieldName);
+	    $count = count($fieldNameArray);
+	    $parameter = $fieldNameArray[$count-1];
+	    return $parameter;
+	}
+	
 	private function processRule(
 			QueryBuilder $qb,
 			$groupOperand,
@@ -48,100 +56,93 @@ class Paginator {
 			$prefix
 			){
 				$whereMethod = strtolower($groupOperand)."Where"; // produces andWhere or orWhere
+				
+				// in case we have a value object in the entity we want to search by eg. priority.priority 
+				$parameter = $this->resolveParameter($fieldName);
 				switch ($operand){
 						
-					// @todo
-					/*
-					 { oper: "bw", text: "begins with" }, // done
-					 { oper: "bn", text: "not begins with " }, // done
-					 { oper: "in", text: "is in" },
-					 { oper: "ni", text: "is not in" },
-					 { oper: "ew", text: "ends with" }, // done
-					 { oper: "en", text: "not ends with" }, // done
-					 */
-						
 					case 'cn':
-						$qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$fieldName));
-						$qb->setParameter($fieldName, "%".$value."%");
+					    $qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$parameter));
+						$qb->setParameter($parameter, "%".$value."%");
 						break;
 	
 					case 'nc':
-						$qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$fieldName));
-						$qb->setParameter($fieldName, "%".$value."%");
+					    $qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$parameter));
+						$qb->setParameter($parameter, "%".$value."%");
 						break;
 	
 					case 'bw':
-						$qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$fieldName));
-						$qb->setParameter($fieldName, $value."%");
+					    $qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$parameter));
+						$qb->setParameter($parameter, $value."%");
 						break;
 	
 					case 'bn':
-						$qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$fieldName));
-						$qb->setParameter($fieldName, $value."%");
+					    $qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$parameter));
+						$qb->setParameter($parameter, $value."%");
 						break;
 	
 					case 'ew':
-						$qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$fieldName));
-						$qb->setParameter($fieldName, "%".$value);
+					    $qb->{$whereMethod}($qb->expr()->like($prefix.".".$fieldName, ':'.$parameter));
+						$qb->setParameter($parameter, "%".$value);
 						break;
 	
 					case 'en':
-						$qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$fieldName));
-						$qb->setParameter($fieldName, "%".$value);
+					    $qb->{$whereMethod}($qb->expr()->notLike($prefix.".".$fieldName, ':'.$parameter));
+						$qb->setParameter($parameter, "%".$value);
 						break;
 	
 					case 'nu':
-						$qb->{$whereMethod}($qb->expr()->isNull($prefix.".".$fieldName));
-						$qb->setParameter($fieldName, $value);
+					    $qb->{$whereMethod}($qb->expr()->isNull($prefix.".".$parameter));
+						$qb->setParameter($parameter, $value);
 						break;
 	
 					case 'nn':
-						$qb->{$whereMethod}($qb->expr()->isNotNull($prefix.".".$fieldName));
-						$qb->setParameter($fieldName, $value);
+					    $qb->{$whereMethod}($qb->expr()->isNotNull($prefix.".".$parameter));
+						$qb->setParameter($parameter, $value);
 						break;
 	
 					case 'ge':
-						$qb->{$whereMethod}($prefix.".".$fieldName . ' >= :' . $fieldName);
-						$qb->setParameter($fieldName, $value);
+					    $qb->{$whereMethod}($prefix.".".$fieldName . ' >= :' . $parameter);
+						$qb->setParameter($parameter, $value);
 						break;
 	
 					case 'le':
-						$qb->{$whereMethod}($prefix.".".$fieldName . ' <= :' . $fieldName);
-						$qb->setParameter($fieldName, $value);
+					    $qb->{$whereMethod}($prefix.".".$fieldName . ' <= :' . $parameter);
+						$qb->setParameter($parameter, $value);
 						break;
 	
 					case 'eq':
-						$qb->{$whereMethod}($prefix.".".$fieldName . ' = :' . $fieldName);
-						$qb->setParameter($fieldName, $value);
+					    $qb->{$whereMethod}($prefix.".".$fieldName . ' = :' . $parameter);
+						$qb->setParameter($parameter, $value);
 						break;
 	
 					case 'ne':
-						$qb->{$whereMethod}($prefix.".".$fieldName . ' != :' . $fieldName);
-						$qb->setParameter($fieldName, $value);
+					    $qb->{$whereMethod}($prefix.".".$fieldName . ' != :' . $parameter);
+						$qb->setParameter($parameter, $value);
 						break;
 	
 					case 'lt':
-						$qb->{$whereMethod}($prefix.".".$fieldName . ' < :' . $fieldName);
-						$qb->setParameter($fieldName, $value);
+					    $qb->{$whereMethod}($prefix.".".$fieldName . ' < :' . $parameter);
+						$qb->setParameter($parameter, $value);
 						break;
 	
 					case 'gt':
-						$qb->{$whereMethod}($prefix.".".$fieldName . ' > :' . $fieldName);
-						$qb->setParameter($fieldName, $value);
+					    $qb->{$whereMethod}($prefix.".".$fieldName . ' > :' . $parameter);
+						$qb->setParameter($parameter, $value);
 						break;
 	
 					case 'in':
-						$qb->{$whereMethod}($qb->expr()->in($prefix.".".$fieldName, ':'.$fieldName));
-						$qb->setParameter($fieldName, explode($this->getSeparator(),$value));
+					    $qb->{$whereMethod}($qb->expr()->in($prefix.".".$fieldName, ':'.$parameter));
+						$qb->setParameter($parameter, explode($this->getSeparator(),$value));
 						break;
 	
 					case 'ni':
-						$qb->{$whereMethod}($qb->expr()->notIn($prefix.".".$fieldName, ':'.$fieldName));
-						$qb->setParameter($fieldName, explode($this->getSeparator(),$value));
+					    $qb->{$whereMethod}($qb->expr()->notIn($prefix.".".$fieldName, ':'.$parameter));
+						$qb->setParameter($parameter, explode($this->getSeparator(),$value));
 						break;
 				}
 	
-				/*$qb->setParameter($fieldName, $value);*/
+				/*$qb->setParameter($parameter, $value);*/
 				return $qb;
 	}
 	
