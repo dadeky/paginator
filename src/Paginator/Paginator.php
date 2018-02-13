@@ -150,6 +150,10 @@ class Paginator {
 			case 'btw':
 			    list($v1, $v2) = explode(",", $value);
 			    $v1 = trim($v1); $v2 = trim($v2);
+			    
+			    // string
+			    if (!is_int($v1) && !is_float($v1)) { $v1 = "'$v1'";  $v2 = "'$v2'"; }
+				
 			    $qb->{$whereMethod}($qb->expr()->between($prefixTxt . $fieldName, $v1, $v2));
 			    break;
 		}
