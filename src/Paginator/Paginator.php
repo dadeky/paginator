@@ -145,6 +145,13 @@ class Paginator {
 			    $qb->{$whereMethod}($qb->expr()->notIn($prefixTxt . $fieldName, ':'.$parameter));
 				$qb->setParameter($parameter, explode($this->getSeparator(),$value));
 				break;
+				
+			// between (value: "2018-01-01, 2018-02-01")
+			case 'btw':
+			    list($v1, $v2) = explode(",", $value);
+			    $v1 = trim($v1); $v2 = trim($v2);
+			    $qb->{$whereMethod}($qb->expr()->between($prefixTxt . $fieldName, $v1, $v2));
+			    break;
 		}
 
 		/*$qb->setParameter($parameter, $value);*/
