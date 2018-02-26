@@ -204,7 +204,12 @@ class Paginator {
 			}
 		}
 	
-		$this->totalItems = count($this->cloneQuery($qb->getQuery())->getScalarResult());
+		// total items
+		$countQb = clone $qb;
+		$aliases = $countQb->getAllAliases();
+		$this->totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
+    		->getQuery()
+    		->getSingleScalarResult();
 		$this->totalPages = ceil($this->totalItems / $this->request->getItemCount());
 	
 		//pagination
