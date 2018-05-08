@@ -207,9 +207,19 @@ class Paginator {
 		// total items
 		$countQb = clone $qb;
 		$aliases = $countQb->getAllAliases();
-		$this->totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
-    		->getQuery()
-    		->getSingleScalarResult();
+		try{
+		    $this->totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
+		    ->getQuery()
+		    ->getSingleScalarResult();
+		} catch (\Exception $e){
+		    if($e instanceof  NonUniqueResultException){
+		        $totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
+		        ->getQuery()
+		        ->getScalarResult();
+		        end($totalItems);
+		        $this->totalItems = key($totalItems)+1;
+		    }
+		}
 		$this->totalPages = ceil($this->totalItems / $this->request->getItemCount());
 	
 		//pagination
