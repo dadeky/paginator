@@ -36,13 +36,20 @@ abstract class AbstractPaginatedQueryRequest
 	/** @var bool */
 	protected $resultShouldBePaginated = true;
 	
+	/**
+	 * Always order by this spec
+	 * @var \stdClass
+	 */
+	protected $mandatoryOrderSpecs;
+	
 	public function __construct(
 			$page,
 			$itemCount,
 			$searchEnabled,
 			$searchParams,
 			$orderSpecs,
-			$resultShouldBePaginated
+			$resultShouldBePaginated,
+	        \stdClass $mandatoryOrderSpecs = null
 	){
 		$this->page = $page;
 		$this->itemCount = $itemCount;
@@ -50,9 +57,20 @@ abstract class AbstractPaginatedQueryRequest
 		$this->setResultShouldBePaginated($resultShouldBePaginated);
 		$this->orderSpecs = $orderSpecs;
 		$this->setSearchParams($searchParams);
+		$this->setMandatoryOrderSpecs($mandatoryOrderSpecs);
 	}
-	
-	/**
+
+    public function getMandatoryOrderSpecs()
+    {
+        return $this->mandatoryOrderSpecs;
+    }
+
+    public function setMandatoryOrderSpecs($mandatoryOrderSpecs)
+    {
+        $this->mandatoryOrderSpecs = $mandatoryOrderSpecs;
+    }
+
+    /**
      * @param $resultShouldBePaginated
      */
     public function setResultShouldBePaginated($resultShouldBePaginated)

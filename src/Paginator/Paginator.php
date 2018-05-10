@@ -2,6 +2,7 @@
 
 namespace Paginator;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 
@@ -195,12 +196,21 @@ class Paginator {
 		    }
 		}
 	
+		// mandatory order spec
+		if (count($this->request->getMandatoryOrderSpecs()) > 0)
+		{
+		    foreach ($this->request->getMandatoryOrderSpecs() as $field => $direction)
+		    {
+		        $qb->addOrderBy($prefixTxt . $field, $direction);
+		    }
+		}
+		
 		//ordering
 		if (count($this->request->getOrderSpecs()) > 0)
 		{
 			foreach ($this->request->getOrderSpecs() as $field => $direction)
 			{
-			    $qb->orderBy($prefixTxt . $field, $direction);
+			    $qb->addOrderBy($prefixTxt . $field, $direction);
 			}
 		}
 	
@@ -212,7 +222,7 @@ class Paginator {
 		    ->getQuery()
 		    ->getSingleScalarResult();
 		} catch (\Exception $e){
-		    if($e instanceof  NonUniqueResultException){
+		    if($e instanceof NonUniqueResultException){
 		        $totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
 		        ->getQuery()
 		        ->getScalarResult();
