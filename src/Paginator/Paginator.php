@@ -2,6 +2,7 @@
 
 namespace Paginator;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 
@@ -195,21 +196,40 @@ class Paginator {
 		    }
 		}
 	
+		// mandatory order spec
+		if (count($this->request->getMandatoryOrderSpecs()) > 0)
+		{
+		    foreach ($this->request->getMandatoryOrderSpecs() as $field => $direction)
+		    {
+		        $qb->addOrderBy($prefixTxt . $field, $direction);
+		    }
+		}
+		
 		//ordering
 		if (count($this->request->getOrderSpecs()) > 0)
 		{
 			foreach ($this->request->getOrderSpecs() as $field => $direction)
 			{
-			    $qb->orderBy($prefixTxt . $field, $direction);
+			    $qb->addOrderBy($prefixTxt . $field, $direction);
 			}
 		}
 	
 		// total items
 		$countQb = clone $qb;
 		$aliases = $countQb->getAllAliases();
-		$this->totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
-    		->getQuery()
-    		->getSingleScalarResult();
+		try{
+		    $this->totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
+		    ->getQuery()
+		    ->getSingleScalarResult();
+		} catch (\Exception $e){
+		    if($e instanceof NonUniqueResultException){
+		        $totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
+		        ->getQuery()
+		        ->getScalarResult();
+		        end($totalItems);
+		        $this->totalItems = key($totalItems)+1;
+		    }
+		}
 		$this->totalPages = ceil($this->totalItems / $this->request->getItemCount());
 	
 		//pagination
