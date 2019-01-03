@@ -197,7 +197,7 @@ class Paginator {
 		}
 	
 		// mandatory order spec
-		if (count($this->request->getMandatoryOrderSpecs()) > 0)
+		if (count((array)$this->request->getMandatoryOrderSpecs()) > 0)
 		{
 		    foreach ($this->request->getMandatoryOrderSpecs() as $field => $direction)
 		    {
@@ -206,7 +206,7 @@ class Paginator {
 		}
 		
 		//ordering
-		if (count($this->request->getOrderSpecs()) > 0)
+		if (count((array)$this->request->getOrderSpecs()) > 0)
 		{
 			foreach ($this->request->getOrderSpecs() as $field => $direction)
 			{
