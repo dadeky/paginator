@@ -99,12 +99,10 @@ class Paginator {
 
 			case 'nu':
 			    $qb->{$whereMethod}($qb->expr()->isNull($prefixTxt . $parameter));
-				$qb->setParameter($parameter, $value);
 				break;
 
 			case 'nn':
 			    $qb->{$whereMethod}($qb->expr()->isNotNull($prefixTxt . $parameter));
-				$qb->setParameter($parameter, $value);
 				break;
 
 			case 'ge':
