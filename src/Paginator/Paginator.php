@@ -44,7 +44,7 @@ class Paginator {
 	{
 	    $fieldNameArray = explode(".", $fieldName);
 	    $count = count($fieldNameArray);
-	    $parameter = $fieldNameArray[$count-1];
+	    $parameter = trim($fieldNameArray[$count-1], ")");
 	    return $parameter;
 	}
 	
