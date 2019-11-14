@@ -40,11 +40,19 @@ class Paginator {
 		$this->request = $request;
 	}
 	
-	private function resolveParameter($fieldName)
+	private function resolveParameter($fieldName, QueryBuilder $qb)
 	{
 	    $fieldNameArray = explode(".", $fieldName);
 	    $count = count($fieldNameArray);
-	    $parameter = $fieldNameArray[$count-1];
+	    $parameter = trim($fieldNameArray[$count-1], ")");
+	    
+	    $parameters = $qb->getParameters();
+	    foreach ($parameters as $exParameter) {
+	        if ($parameter == $exParameter->getName()) {
+	            $parameter = $parameter . "_" . count($parameters);
+	        }
+	    }
+	    
 	    return $parameter;
 	}
 	
@@ -64,7 +72,7 @@ class Paginator {
 		$whereMethod = strtolower($groupOperand)."Where"; // produces andWhere or orWhere
 		
 		// in case we have a value object in the entity we want to search by eg. priority.priority 
-		$parameter = $this->resolveParameter($fieldName);
+		$parameter = $this->resolveParameter($fieldName, $qb);
 		switch ($operand){
 				
 			case 'cn':
@@ -99,12 +107,10 @@ class Paginator {
 
 			case 'nu':
 			    $qb->{$whereMethod}($qb->expr()->isNull($prefixTxt . $parameter));
-				$qb->setParameter($parameter, $value);
 				break;
 
 			case 'nn':
 			    $qb->{$whereMethod}($qb->expr()->isNotNull($prefixTxt . $parameter));
-				$qb->setParameter($parameter, $value);
 				break;
 
 			case 'ge':
