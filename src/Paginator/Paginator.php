@@ -71,7 +71,7 @@ class Paginator {
         
 		$whereMethod = strtolower($groupOperand)."Where"; // produces andWhere or orWhere
 		
-		// in case we have a value object in the entity we want to search by eg. priority.priority 
+		// in case we have a value object in the entity we want to search by eg. priority.priority
 		$parameter = $this->resolveParameter($fieldName, $qb);
 		switch ($operand){
 				
@@ -106,11 +106,11 @@ class Paginator {
 				break;
 
 			case 'nu':
-			    $qb->{$whereMethod}($qb->expr()->isNull($prefixTxt . $parameter));
+			    $qb->{$whereMethod}($qb->expr()->isNull($prefixTxt . $fieldName));
 				break;
 
 			case 'nn':
-			    $qb->{$whereMethod}($qb->expr()->isNotNull($prefixTxt . $parameter));
+			    $qb->{$whereMethod}($qb->expr()->isNotNull($prefixTxt . $fieldName));
 				break;
 
 			case 'ge':
