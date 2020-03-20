@@ -7,55 +7,55 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 
 class Paginator {
-	
+
 	/** @var AbstractPaginatedQueryRequest */
 	private $request;
-	
+
 	/**
 	 * The total number of items in the paginator
 	 * @var integer
 	 */
 	private $totalItems;
-	
+
 	/**
 	 * The total number of pages
 	 * @var integer
 	 */
 	private $totalPages;
-	
+
 	/**
 	 * Separator for IN, NOT IN
 	 * @var string
 	 */
 	private $separator = ";";
-	
+
 	/**
 	 * @var array
 	 */
 	private $paginatedResult;
-	
+
 	public function __construct(
         AbstractPaginatedQueryRequest $request
 	){
 		$this->request = $request;
 	}
-	
+
 	private function resolveParameter($fieldName, QueryBuilder $qb)
 	{
 	    $fieldNameArray = explode(".", $fieldName);
 	    $count = count($fieldNameArray);
 	    $parameter = trim($fieldNameArray[$count-1], ")");
-	    
+
 	    $parameters = $qb->getParameters();
 	    foreach ($parameters as $exParameter) {
 	        if ($parameter == $exParameter->getName()) {
 	            $parameter = $parameter . "_" . count($parameters);
 	        }
 	    }
-	    
+
 	    return $parameter;
 	}
-	
+
 	private function processRule(
     	QueryBuilder $qb,
     	$groupOperand,
@@ -66,15 +66,15 @@ class Paginator {
     ){
 	    // allows us to use no prefix
 	    // but most important - allows us to define prefix ourselves (when using more then one table...each with it's own prefix)
-	    
+
         $prefixTxt = $prefix ? ($prefix . '.') : '';
-        
+
 		$whereMethod = strtolower($groupOperand)."Where"; // produces andWhere or orWhere
-		
+
 		// in case we have a value object in the entity we want to search by eg. priority.priority
 		$parameter = $this->resolveParameter($fieldName, $qb);
 		switch ($operand){
-				
+
 			case 'cn':
 			    $qb->{$whereMethod}($qb->expr()->like($prefixTxt . $fieldName, ':'.$parameter));
 				$qb->setParameter($parameter, "%".$value."%");
@@ -152,15 +152,15 @@ class Paginator {
 			    $qb->{$whereMethod}($qb->expr()->notIn($prefixTxt . $fieldName, ':'.$parameter));
 				$qb->setParameter($parameter, explode($this->getSeparator(),$value));
 				break;
-				
+
 			// between (value: "2018-01-01, 2018-02-01")
 			case 'btw':
 			    list($v1, $v2) = explode(",", $value);
 			    $v1 = trim($v1); $v2 = trim($v2);
-			    
+
 			    // string
 			    if (!is_int($v1) && !is_float($v1)) { $v1 = "'$v1'";  $v2 = "'$v2'"; }
-				
+
 			    $qb->{$whereMethod}($qb->expr()->between($prefixTxt . $fieldName, $v1, $v2));
 			    break;
 		}
@@ -168,12 +168,12 @@ class Paginator {
 		/*$qb->setParameter($parameter, $value);*/
 		return $qb;
 	}
-	
+
 	private function firstResult()
 	{
 		return ($this->getPageNumber() - 1) * $this->request->getItemCount();
 	}
-	
+
 	/**
 	 * Restricts the query according to the pagination properties
 	 * @param QueryBuilder $qb
@@ -184,9 +184,9 @@ class Paginator {
 	{
 		$prefix = $query->getPrefix();
 		$qb = $query->getQueryBuilder();
-		
+
 		$prefixTxt = $prefix ? ($prefix . '.') : '';
-		
+
 		//search
 		if($this->request->getSearchEnabled())
 		{
@@ -201,7 +201,7 @@ class Paginator {
 		        }
 		    }
 		}
-	
+
 		// mandatory order spec
 		if (count((array)$this->request->getMandatoryOrderSpecs()) > 0)
 		{
@@ -210,7 +210,7 @@ class Paginator {
 		        $qb->addOrderBy($prefixTxt . $field, $direction);
 		    }
 		}
-		
+
 		//ordering
 		if (count((array)$this->request->getOrderSpecs()) > 0)
 		{
@@ -219,17 +219,17 @@ class Paginator {
 			    $qb->addOrderBy($prefixTxt . $field, $direction);
 			}
 		}
-	
+
 		// total items
 		$countQb = clone $qb;
 		$aliases = $countQb->getAllAliases();
 		try{
-		    $this->totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
+		    $this->totalItems = $countQb->select("COUNT('{$aliases[0]}')")
 		    ->getQuery()
 		    ->getSingleScalarResult();
 		} catch (\Exception $e){
 		    if($e instanceof NonUniqueResultException){
-		        $totalItems = $countQb->select('COUNT(' . $aliases[0] . ')')
+		        $totalItems = $countQb->select("COUNT('{$aliases[0]}')")
 		        ->getQuery()
 		        ->getScalarResult();
 		        end($totalItems);
@@ -237,16 +237,16 @@ class Paginator {
 		    }
 		}
 		$this->totalPages = ceil($this->totalItems / $this->request->getItemCount());
-	
+
 		//pagination
 		$qb->setMaxResults($this->request->getItemCount());
 		$qb->setFirstResult($this->firstResult());
-		
+
 		$this->paginatedResult = $qb->getQuery()->getResult($query->getHydrator());
-	
+
 		return $this;
 	}
-	
+
 	/**
 	 * Clones a query.
 	 *
@@ -258,37 +258,37 @@ class Paginator {
 	{
 		/* @var $cloneQuery Query */
 		$cloneQuery = clone $query;
-	
+
 		$cloneQuery->setParameters(clone $query->getParameters());
 		$cloneQuery->setCacheable(false);
-	
+
 		foreach ($query->getHints() as $name => $value) {
 			$cloneQuery->setHint($name, $value);
 		}
-	
+
 		return $cloneQuery;
 	}
-	
+
 	public function getPaginatedResult()
 	{
 		return $this->paginatedResult;
 	}
-	
+
 	public function getPageNumber()
 	{
 		return $this->request->getPage();
 	}
-	
+
 	public function getTotalPages()
 	{
 		return $this->totalPages;
 	}
-	
+
 	public function getTotalItems()
 	{
 		return $this->totalItems;
 	}
-	
+
 	public function getSeparator()
 	{
 		return $this->separator;
