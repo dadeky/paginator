@@ -106,19 +106,30 @@ abstract class AbstractPaginatedQueryRequest
 	 */
 	public function setSearchParams($searchParams)
 	{
-        if ($searchParams instanceof SearchGroup){
-            $this->searchParams = $searchParams;
-        }else{
-            if (isset($searchParams->rules) && count($searchParams->rules) > 0)
-            {
-                $rules = [];
-                foreach ($searchParams->rules as $rule){
-                    $rules[] = new SearchRule($rule->field, $rule->op, $rule->data);
-                }
-                $this->searchParams = new SearchGroup($searchParams->groupOp, $rules);
-            }
-        }
+	    if (isset($searchParams->rules) && count($searchParams->rules) > 0){
+	        $rules = [];
+	        foreach ($searchParams->rules as $rule){
+	            $rules[] = new SearchRule($rule->field, $rule->op, $rule->data);
+	        }
+	        $this->searchParams = new SearchGroup($searchParams->groupOp, $rules);
+	    } else if(isset($searchParams->groups)){
+	        $rules = [];
+	        $this->searchParams = new SearchGroup($searchParams->groupOp, $rules);
+	    }
+	    if (isset($searchParams->groups) && count($searchParams->groups) > 0)
+	    {
+	        foreach($searchParams->groups as $group)
+	        {
+	            $subRules = [];
+	            foreach($group->rules as $rule)
+	            {
+	                $subRules[] = new SearchRule($rule->field, $rule->op, $rule->data);
+	            }
+	            $this->searchParams->addGroup(new SearchGroup($group->groupOp, $subRules));
+	        }
+	    }
 	}
+	
 	
 	/**
 	 * @return number
