@@ -9,6 +9,9 @@ class SearchGroup
     /** @var SearchRule[] */
     private $searchRules;
     
+    /** @var SearchGroup[] */
+    private $groups;
+    
     public function __construct(
         $groupOperand,
         array $searchRules
@@ -33,6 +36,14 @@ class SearchGroup
     }
 
     /**
+     * @return SearchGroup[] $searchGroups
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+    
+    /**
      * @param string $groupOperand
      */
     public function setGroupOperand($groupOperand)
@@ -53,5 +64,10 @@ class SearchGroup
         $this->searchRules[] = $searchRule;
     }
     
+    public function addGroup(SearchGroup $group)
+    {
+        $this->groups[] = $group;
+        return $this;
+    }
 }
 

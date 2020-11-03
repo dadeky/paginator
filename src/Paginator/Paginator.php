@@ -184,6 +184,7 @@ class Paginator {
 	{
 		$prefix = $query->getPrefix();
 		$qb = $query->getQueryBuilder();
+		$subQb = clone $qb;
 
 		$prefixTxt = $prefix ? ($prefix . '.') : '';
 
@@ -192,6 +193,21 @@ class Paginator {
 		{
 		    if (null !== $this->request->getSearchParams())
 		    {
+		        if(count($this->request->getSearchParams()->getGroups()) > 0)
+		        {
+		            foreach ($this->request->getSearchParams()->getGroups() as $group)
+		            {
+		                $subSubQb = clone  $subQb;
+		                foreach($group->getSearchRules() as $rule)
+		                {
+		                    $subSubQb = $this->processRule($subSubQb, $group->getGroupOperand(), $rule->getField(), $rule->getOperand(), $rule->getData(), $prefix);
+		                }
+		                $qb->andWhere($subSubQb->getDQLPart('where'));
+		                foreach ($subSubQb->getParameters() as $parameter){
+		                    $qb->setParameter($parameter->getName(), $parameter->getValue(), $parameter->getType());
+		                }
+		            }
+		        }
 		        if (count($this->request->getSearchParams()->getSearchRules()) > 0)
 		        {
 		            foreach ($this->request->getSearchParams()->getSearchRules() as $rule)
