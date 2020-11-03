@@ -193,7 +193,7 @@ class Paginator {
 		{
 		    if (null !== $this->request->getSearchParams())
 		    {
-		        if(count($this->request->getSearchParams()->getGroups()) > 0)
+		        if(null !== $this->request->getSearchParams()->getGroups())
 		        {
 		            foreach ($this->request->getSearchParams()->getGroups() as $group)
 		            {
