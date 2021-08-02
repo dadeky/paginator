@@ -27,7 +27,7 @@ class Paginator {
 	 * Separator for IN, NOT IN
 	 * @var string
 	 */
-	private $separator = ";";
+	private $separator = ",";
 
 	/**
 	 * @var array
